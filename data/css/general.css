@@ -1,0 +1,40 @@
+a{
+    color: deeppink;
+}
+a:hover{
+    color:transparent;
+}    
+
+p{
+    color:snow;
+    margin-top: 60px;
+}
+
+body{
+    margin:auto;
+    margin-top: 40px;
+    width: 800px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14;
+    line-height: 2.5;
+    margin-top: 20px;
+    background-color: blue;
+    text-align: justify;
+    }
+.content{
+    color: aliceblue;
+    font-size: 12;
+}
+.time{
+    font-size: 18px;
+    color: deeppink;
+}
+
+.highlight{
+    color: deeppink;
+}
+
+.button{
+    text-align: center;
+    color: deeppink;
+}
