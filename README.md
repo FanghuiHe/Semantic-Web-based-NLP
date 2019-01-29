@@ -1,1 +1,1 @@
-https://FanghuiHe.github,io/Semantic-Web-based-NLP/
+https://FanghuiHe.github.io/Semantic-Web-based-NLP/
