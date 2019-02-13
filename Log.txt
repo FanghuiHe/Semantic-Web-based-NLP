@@ -1,0 +1,15 @@
+;;  ?? should we differentiate position and phy-obj/ mobj?
+;; 	Add position as exp type
+;;	?? if so, what about the word like reach, which can have many possible type of actors
+;;  ?? poss  ≤√¥“‚Àº (possessive)
+;; 	?? how to duel with tow instrumental cd (e.g. bring)
+;; 	?? do we need to specify the preposition of a verb? if so, 
+;; 		many verbs will have different meaning given different preposition, how to deal with it? define different phrases
+;; 	Define OBJECT-GAP
+;;  How to deal with the Modal verbs? primitive as NIL? (e.g. must)
+;; 	How to deal with the verbs like "I happen to see sth"?
+;; 	Define script or event as an exp type to represent an event / a thing. Are there difference between the two?
+;; 	Add an abstract-obj as exp type
+;; 	Double check about the statechange syntax (NING)
+;; 	?? for vi, label object as NIL? (e.g. happen m1)
+;;	collapse VS death. how to deal with the scale
