@@ -39,16 +39,16 @@
 
 (defun mcdypar (filename)
   (cond ((setf *stream* (open filename))
-	 (let ((text (preprocessor)))
-	   (print-line-of-*)
-	   (format t "~%~%KCL MCDYPAR")
-	   (format t "~%~%Sentence read:~%  ~s~%" text)
-	   (print-line-of-*)
-	   (parse text)
-	   (print-line-of-*)
-	   (format t "~%~%Program terminated~%")
-	   (print-line-of-*)
-	 (close *stream*)))))
+     (let ((text (preprocessor)))
+       (print-line-of-*)
+       (format t "~%~%KCL MCDYPAR")
+       (format t "~%~%Sentence read:~%  ~s~%" text)
+       (print-line-of-*)
+       (parse text)
+       (print-line-of-*)
+       (format t "~%~%Program terminated~%")
+       (print-line-of-*)
+     (close *stream*)))))
 
 (defun print-line () (format T "~%"))
 (defun print-line-of-* ()
@@ -98,8 +98,8 @@
   ;; load the word into working memory, spawning any demons and
   ;; setting the definition if it is known.
   (let ((con (add-workmemory (newsym 'concept)))
-	(def (get word 'def))
-	(dem (get word 'demons)))
+    (def (get word 'def))
+    (dem (get word 'demons)))
     (if def (set con (split-config con def))
       (set con nil))
     (format t "~%~s = ~s" con (eval con))
@@ -112,9 +112,9 @@
   (format t "~%Adding to *workmemory*: ~s" con)
   (setf (get con 'word) *current-word*) ; save word that caused this concept
   (cond ((null *workmemory*) (setf *workmemory* con))
-	(t (setf (get con 'before) *workmemory*)
-	   (setf (get *workmemory* 'after) con)
-	   (setf *workmemory* con))))
+    (t (setf (get con 'before) *workmemory*)
+       (setf (get *workmemory* 'after) con)
+       (setf *workmemory* con))))
 
 (defun newsym (sym)
   ;; create a new unique symbol in the sequence sym1 sym2 sym3 ...
@@ -122,7 +122,7 @@
     (if (null count) (setf count 0))
     (setf (get sym 'usage-count) (1+ count))
     (intern (concatenate 'string (string sym)
-				      (prin1-to-string count)))))
+                      (prin1-to-string count)))))
 
 ;;; a word definition in the lexicon should be in configuration form.
 ;;; a configuration (config) is a cd structure with any gap-filling
@@ -164,53 +164,53 @@
       (format T "~%struct = ~S, slot = ~S" struct slot)
       (setf struct (append1 struct slot)) ;; slot names are copied
       (format T "~%slot = ~S, filler = ~S, struct = ~S"
-	      slot filler struct)
+          slot filler struct)
       (cond (;; if the gap position is nil then create a gap-node with
-	     ;; the value nil.
-	     (null filler)
-	     (setf gap (newsym slot))
-	     (set gap nil))
+         ;; the value nil.
+         (null filler)
+         (setf gap (newsym slot))
+         (set gap nil))
 
-	    ((consp filler)
-	     ;; if the gap position holds an embedded structure, then
-	     ;; recursively spawn any demons for that structure.
+        ((consp filler)
+         ;; if the gap position holds an embedded structure, then
+         ;; recursively spawn any demons for that structure.
 
-	     (format T "~%#1 slot = ~S, filler = ~S, struct = ~S"
-		     slot filler struct)
+         (format T "~%#1 slot = ~S, filler = ~S, struct = ~S"
+             slot filler struct)
 
-	     (setf gap (newsym slot))
-	     (set gap (split-config con filler))
+         (setf gap (newsym slot))
+         (set gap (split-config con filler))
 
-	     (format T "~%#2 slot = ~S, filler = ~S, struct = ~S"
-		     slot filler struct)
-	     )
+         (format T "~%#2 slot = ~S, filler = ~S, struct = ~S"
+             slot filler struct)
+         )
 
-	    ((equal filler '*)
-	     ;; if the gap position holds a "*" then it must have
-	     ;; "<==" and demons following, so spawn these demons.
-	     (setf gap (newsym slot))
-	     (set gap nil)
-	     (pop rest) ; ignore "<=="
-	     (setf dforms (pop rest)) ; get demons and spawn them
-	     (spawn-dforms con dforms gap))
+        ((equal filler '*)
+         ;; if the gap position holds a "*" then it must have
+         ;; "<==" and demons following, so spawn these demons.
+         (setf gap (newsym slot))
+         (set gap nil)
+         (pop rest) ; ignore "<=="
+         (setf dforms (pop rest)) ; get demons and spawn them
+         (spawn-dforms con dforms gap))
 
-	    ((symbolp filler)
-	     ;; if the gap-position holds an atom, then it may or may
-	     ;; not be followed by demons. if demons do follow it, the
-	     ;; save the atom so that other references to it get the
-	     ;; same gap.
-	     (cond ((equal (car rest) '<==)
-		    (setf gap (newsym filler))
-		    (set gap nil)
-		    (push (cons filler gap) *gap-alist*)
-		    (pop rest)
-		    (setf dforms (pop rest))
-		    (spawn-dforms con dforms gap))
-		   (t (setf gap (cdr (assoc filler *gap-alist*)))
-		      (if (null gap) (setf gap filler)))))
+        ((symbolp filler)
+         ;; if the gap-position holds an atom, then it may or may
+         ;; not be followed by demons. if demons do follow it, the
+         ;; save the atom so that other references to it get the
+         ;; same gap.
+         (cond ((equal (car rest) '<==)
+            (setf gap (newsym filler))
+            (set gap nil)
+            (push (cons filler gap) *gap-alist*)
+            (pop rest)
+            (setf dforms (pop rest))
+            (spawn-dforms con dforms gap))
+           (t (setf gap (cdr (assoc filler *gap-alist*)))
+              (if (null gap) (setf gap filler)))))
 
-	    ;; Error case: should not occur
-	    (t (format t "~%Error in split-rest: filler = ~s" filler)))
+        ;; Error case: should not occur
+        (t (format t "~%Error in split-rest: filler = ~s" filler)))
       (format T "~%struct = ~S, gap = ~S" struct gap)
       (setf struct (append1 struct gap))))
       
@@ -229,10 +229,10 @@
 
 (defun examine-all-d-agendas (con)
   (cond ((null con) nil)
-	(t (dolist (d-atm (get con 'd-agenda))
-	     (setf *current-demon* d-atm)
-	     (run-demon-atm d-atm con))
-	   (examine-all-d-agendas (get con 'before)))))
+    (t (dolist (d-atm (get con 'd-agenda))
+         (setf *current-demon* d-atm)
+         (run-demon-atm d-atm con))
+       (examine-all-d-agendas (get con 'before)))))
 
 ;;;**********************************************************************
 ;;; DEMON INTERPRETER FUNCTIONS
@@ -244,57 +244,57 @@
 ;;; (test t).
 (defun run-demon-atm (d-atm con)
   (let* ((d-form (eval d-atm))       ;; d-form is named demon
-	 (d-name (car d-form))
-	 (argums (cdr d-form))
-	 (d-body (get d-name 'demon))
-	 (vars   (append (cdr (assoc 'share d-body))  ; shared variables
-			 (cdr (assoc 'params d-body)) ; parameters
-			 '(test))))                   ; test result
+     (d-name (car d-form))
+     (argums (cdr d-form))
+     (d-body (get d-name 'demon))
+     (vars   (append (cdr (assoc 'share d-body))  ; shared variables
+             (cdr (assoc 'params d-body)) ; parameters
+             '(test))))                   ; test result
     ;; Create parameter and shared environment. (Shared values are
     ;; initialized to NIL). Once variables have been bound to values from
     ;; argums, run-demon is executed within this dynamic binding
     ;; environment.
     (do ((vl vars (cdr vl))
-	 (al argums (cdr al)))
-	((null vl))
-	(if (not (boundp (car vl)))
-	    (eval (list 'defvar (car vl) NIL))))
+     (al argums (cdr al)))
+    ((null vl))
+    (if (not (boundp (car vl)))
+        (eval (list 'defvar (car vl) NIL))))
     (eval (list 'let (let-list vars argums)
-		`(run-demon ',d-name ',d-body ',d-atm ',con)))))
+        `(run-demon ',d-name ',d-body ',d-atm ',con)))))
 
 (defun let-list (x y)
   (if (null x) NIL
     (cons (list (car x) (list 'quote (car y)))
-	  (let-list (cdr x) (cdr y)))))
+      (let-list (cdr x) (cdr y)))))
 
 ;;; Evaluate every expression in list L, return the last result.
 ;;; NOTE: It can be handy to insert comments into this code to trace
 ;;; the execution of demons.
 (defun eval-list (L)
   (cond ((null L) NIL)
-	((null (cdr L))
-	 (eval (car L)))
-	(T (eval (car L))
-	   (eval-list (cdr L)))))
+    ((null (cdr L))
+     (eval (car L)))
+    (T (eval (car L))
+       (eval-list (cdr L)))))
 
 ;;; actually interprets the demon keyword-parts
 (defun run-demon (d-name d-body d-atm con)
   (let ((kill-part (assoc 'kill d-body))
-	(test-part (assoc 'test d-body))
-	(+act-part (assoc '+act d-body))
-	(-act-part (assoc '-act d-body))
-	(test nil))
+    (test-part (assoc 'test d-body))
+    (+act-part (assoc '+act d-body))
+    (-act-part (assoc '-act d-body))
+    (test nil))
     (cond ((and kill-part (eval-list (cdr kill-part))) ; do?
-	   (kill-demon d-atm con))
-	  ((or (null test-part)
-	       (and (setf test (eval-list (cdr test-part)))))
-	   (format t "~%Executing: ~s = ~s" d-atm (eval d-atm))
-	   (eval-list (cdr +act-part))
-	   (kill-demon d-atm con))
-	  ((and -act-part (null test))
-	   (format t "~%Executing -act of ~s = ~s" d-atm (eval d-atm))
-	   (eval-list (cdr -act-part))
-	   (kill-demon d-atm con)))))
+       (kill-demon d-atm con))
+      ((or (null test-part)
+           (and (setf test (eval-list (cdr test-part)))))
+       (format t "~%Executing: ~s = ~s" d-atm (eval d-atm))
+       (eval-list (cdr +act-part))
+       (kill-demon d-atm con))
+      ((and -act-part (null test))
+       (format t "~%Executing -act of ~s = ~s" d-atm (eval d-atm))
+       (eval-list (cdr -act-part))
+       (kill-demon d-atm con)))))
 
 ;;; if the test is true, always kill the demon.
 (defun kill-demon (d-atm con)
@@ -307,8 +307,8 @@
 ;;; returns a list with first element matching 'elem' at top level removed.
 (defun remove1st (elem l)
   (cond ((null l) nil)
-	((equal elem (car l)) (cdr l))
-	(t (cons (car l) (remove1st elem (cdr l))))))
+    ((equal elem (car l)) (cdr l))
+    (t (cons (car l) (remove1st elem (cdr l))))))
 
 ;;;**********************************************************************
 ;;; FUNCTIONS TO SPAWN DEMONS
@@ -324,7 +324,7 @@
 ;;; dforms is called at word definition time.
 (defun spawn (&rest grp)
   (let ((con (eval (car grp)))
-	(dforms (cdr grp)))
+    (dforms (cdr grp)))
     (dolist (dform dforms)
       (spawn-dform con dform))))
 
@@ -335,44 +335,44 @@
     (setf dforms (list dforms)))
   (dolist (dform dforms)
     (let ((head (car dform))
-	  (args (cond (gap (append (list (list 'quote con)
-					 (list 'quote gap))
-				   (cdr dform)))
-		      (t (append (list (list 'quote con))
-				 (cdr dform))))))
+      (args (cond (gap (append (list (list 'quote con)
+                     (list 'quote gap))
+                   (cdr dform)))
+              (t (append (list (list 'quote con))
+                 (cdr dform))))))
       (spawn-name con head args))))
 
 ;;; like spawn-dforms except myconcept and mygap assumed already inserted
 ;;; in body. this function is called from spawn.
 (defun spawn-dform (con dform)
   (let ((head (car dform))
-	(body (cdr dform)))
+    (body (cdr dform)))
    (format T "~%Spawn-dform, con = ~S, dform = ~S, head = ~S"
-	    con dform head)
+        con dform head)
    (format T "~%body = ~S" body)
    (format T "~%get = ~S" (get head 'demon))
     (cond ((get head 'demon) (spawn-name con head body))
-	  (t (format t "~%Dform not spawned since name: ~s undefined" head)))))
+      (t (format t "~%Dform not spawned since name: ~s undefined" head)))))
 
 ;;; eval args and form their vals into a new dform with name at head.
 ;;; then put d-atom into a d-agenda on the con.
 (defun spawn-name (con head args)
  (format T "~%spawn-name, con = ~S, head = ~S, args = ~S"
-	  con head args)
+      con head args)
   (cond ((null (get head 'demon))
-	 (format t "~%~s not spawned since undefined" head))
-	(t (let ((new-args (mapcar #'eval args))
-		 (d-atom (newsym 'demon)))
-	     (set d-atom (cons head new-args))
-	     (format t "~%Spawning: ~s = ~s" d-atom (eval d-atom))
-	     (print-comment (get head 'demon) d-atom)
-	     (d-agendize con d-atom)))))
+     (format t "~%~s not spawned since undefined" head))
+    (t (let ((new-args (mapcar #'eval args))
+         (d-atom (newsym 'demon)))
+         (set d-atom (cons head new-args))
+         (format t "~%Spawning: ~s = ~s" d-atom (eval d-atom))
+         (print-comment (get head 'demon) d-atom)
+         (d-agendize con d-atom)))))
 
 ;;; the agendas are currently just lists. push the domon onto the
 ;;; agenda.
 (defun d-agendize (con d-atom)
   (setf (get con 'd-agenda)
-	(cons d-atom (get con 'd-agenda))))
+    (cons d-atom (get con 'd-agenda))))
 
 ;;;**********************************************************************
 ;;; FUNCTIONS TO DEFINE WORDS AND DEMONS
@@ -399,22 +399,22 @@
   (let ((name (pop l)))
     (setf (get name 'word) t)        ;; indicates item is defined as a word
     (do ((indic nil)                 ;; put all properties on the word
-	 (val nil))
-	;; term cond & return value
-	((null l) name)
-	;; body of loop
-	(setf indic (pop l))
-	(setf val (pop l))
-	(cond ((equal indic 'value) (set name val))
-	      (t (setf (get name indic) val))))))
+     (val nil))
+    ;; term cond & return value
+    ((null l) name)
+    ;; body of loop
+    (setf indic (pop l))
+    (setf val (pop l))
+    (cond ((equal indic 'value) (set name val))
+          (t (setf (get name indic) val))))))
 
 ;;; Macrod to define demons. <the user can add any other keywords,
 ;;; but they are ignored by the demon interpreter.>
 
 (defmacro demon (name &rest l)
   `(block ()
-	  (setf (get ',name 'demon) ',l)
-	  ',name))
+      (setf (get ',name 'demon) ',l)
+      ',name))
 
 ;;;**********************************************************************
 ;;; STANDARD UTILITY FUNCTIONS USED BY DEMONS
@@ -427,7 +427,7 @@
   (if mygap
     (let ((myslot (slot mygap myconcept))) ; huh?
       (if (symbolp con-found)
-	(setf (get con-found 'inside) (list myconcept myslot mygap)))
+    (setf (get con-found 'inside) (list myconcept myslot mygap)))
       (set1 mygap con-found))))
 
 ;;; Sets the con to the appropriate meaning when disambiguation has
@@ -444,9 +444,9 @@
 ;;; through atm's classes for this class.)
 (defun class? (atm class)
   (cond ((consp atm) (format T "~%CLASS? expects atomic first argument"))
-	((and atm
-	      (cond ((consp class) (member atm class)) ; member-eq
-		    (T (equal atm class)))))))
+    ((and atm
+          (cond ((consp class) (member atm class)) ; member-eq
+            (T (equal atm class)))))))
 
 ;;; Path is used to selectively examine the contents of conceptual
 ;;; structures in working memory. it allows the user to ignore the
@@ -457,11 +457,11 @@
 ;;; and  (path '(object type *) x)  ==> lobster
 (defun path (l cd)
   (cond ((null cd) nil)
-	((atom cd) (path l (eval cd)))
-	((null l) cd)
-	((atom l) (format t "~%PATH expects first argument to be a list"))
-	((equal (car l) '*) (car cd))
-	(t (path-rest l (cdr cd)))))
+    ((atom cd) (path l (eval cd)))
+    ((null l) cd)
+    ((atom l) (format t "~%PATH expects first argument to be a list"))
+    ((equal (car l) '*) (car cd))
+    (t (path-rest l (cdr cd)))))
 
 (defun path-rest (l rv-lis)
   (let ((val (cadr (member (car l) rv-lis)))) ; memq?
@@ -470,8 +470,8 @@
 ;;; expand replaces every gap with its value
 (defun expand (cd)
   (cond ((null cd) nil)
-	((atom cd) (expand (eval cd)))
-	(t (cons (car cd) (expand-sf (cdr cd))))))
+    ((atom cd) (expand (eval cd)))
+    (t (cons (car cd) (expand-sf (cdr cd))))))
 
 ;;; expand-sf expects a list of slot-fillers.
 (defun expand-sf (sf)
@@ -483,22 +483,22 @@
 ;;; given cd-atm = (head slot fil slot fil ...) returns head
 (defun head (cd)
   (cond ((null cd) nil)
-	((atom cd) (head (eval cd)))
-	(t (car cd))))
+    ((atom cd) (head (eval cd)))
+    (t (car cd))))
 
 ;;; given slot-name and cd, returns the top-level gtap-name of that
 ;;; slot-name (not the gap value)
 (defun gap (slot cd)
   (cond ((null cd) nil)
-	((atom cd) (gap slot (eval cd)))
-	(t (cadr (member slot cd)))))
+    ((atom cd) (gap slot (eval cd)))
+    (t (cadr (member slot cd)))))
 
 ;;; given a gap (not the gap value) and a cd, returns the top-lvel
 ;;; slot-name that has gap-name associated with it.
 (defun slot (gap cd)
   (cond ((null cd) nil)
-	((atom cd) (slot gap (eval cd)))
-	(t (cadr (member gap (reverse cd))))))
+    ((atom cd) (slot gap (eval cd)))
+    (t (cadr (member gap (reverse cd))))))
 
 ;;; search takes four parameters:
 ;;; 1. what to look for: a fcn-name or lambda-exp of one argument
@@ -508,25 +508,25 @@
 ;;; note: a. it tries 3. on con atm first, and then tries 1.
 ;;;       b. it quits if runs out of atms to look at
 (defun mcsearch (test-fcn &optional (start *workmemory*)
-			(stop-fcn nil) (dir 'before))
+            (stop-fcn nil) (dir 'before))
   (do ((found nil)
        (ptr start (get ptr dir)))
       ((or (null ptr)
-	   (and stop-fcn
-		(let ((st-val (apply stop-fcn (list ptr))))
-		  (cond ((equal st-val t) nil)
-			(st-val (setf found t)
-				(setf ptr st-val)))))
-	   (setf found (apply test-fcn (list ptr))))
+       (and stop-fcn
+        (let ((st-val (apply stop-fcn (list ptr))))
+          (cond ((equal st-val t) nil)
+            (st-val (setf found t)
+                (setf ptr st-val)))))
+       (setf found (apply test-fcn (list ptr))))
        (and found ptr))))
 
 ;;; look for class throughout *workmemory*
 (defun find-workmemory (class myconcept)
   (mcsearch (lambda (con)
-	     (and (not (equal con myconcept))
-		  (con-class? class)))
-	  *workmemory* nil 'before))
-	
+         (and (not (equal con myconcept))
+          (con-class? class)))
+      *workmemory* nil 'before))
+    
 ;;; like set, but used for tracing 
 (defun set1 (a b)
   (set a b)
@@ -536,24 +536,24 @@
 (defun print-comment (body d-atm)
   (let ((comment (cdr (assoc 'comment body))))
     (let ((test (cdr (assoc 'test comment)))
-	  (act  (cdr (assoc 'act  comment)))
-	  (first T))
+      (act  (cdr (assoc 'act  comment)))
+      (first T))
       (cond ((and *print-comments* (or test act))
-	     (print-line)
-	     (print-line-of-= d-atm)
-	     (format t "~%t:")
-	     (dolist (str test)
-		     (if first (setf first NIL)
-		       (format T "~%     "))
-		     (write-string str))
-	     (format t "~%a:")
-	     (setf first T)
-	     (dolist (str act)
-		     (if first (setf first NIL)
-		       (format T "~%     "))
-		     (write-string str))
-	     (print-line-of-=)
-	     (print-line))))))
+         (print-line)
+         (print-line-of-= d-atm)
+         (format t "~%t:")
+         (dolist (str test)
+             (if first (setf first NIL)
+               (format T "~%     "))
+             (write-string str))
+         (format t "~%a:")
+         (setf first T)
+         (dolist (str act)
+             (if first (setf first NIL)
+               (format T "~%     "))
+             (write-string str))
+         (print-line-of-=)
+         (print-line))))))
 
 ;;; usage:  (copy-elem 'x 3) ==> (x x x)
 (defun copy-elem (elem count)
@@ -582,11 +582,11 @@
 (defun fin ()
   (format T "~%Parse Results:~%")
   (pretty (do ((con *workmemory* (get con 'before))
-	       (unused NIL))
-	      ((null con) unused)
-	      (if (and (not (get con 'inside))
-		       (not (get con 'ignore)))
-		  (push con unused)))))
+           (unused NIL))
+          ((null con) unused)
+          (if (and (not (get con 'inside))
+               (not (get con 'ignore)))
+          (push con unused)))))
 
 (defun pretty (L)
   (dolist (con L)
@@ -603,56 +603,56 @@
   ;; This function returns a list of symbols.
   (let ((s nil))
     (do ((state 'reading-words)
-	 (next-char nil))
-	;; terminating condition
-	((equal state 'done))
-	(setf next-char (read-char *stream* nil))
+     (next-char nil))
+    ;; terminating condition
+    ((equal state 'done))
+    (setf next-char (read-char *stream* nil))
 (if (or (null next-char)
-		(equal next-char '#\@))
-	    (setf state 'done))
-	(case state
-	      (saw-1-slash
-	       (cond ((equal next-char '#\/)
-		      (setf state 'saw-2-slashes))
-		     (t (setf state 'in-comment-block))))
-	      (saw-2-slashes
-	       (cond ((equal next-char '#\/)
-		      (setf state 'in-comment-line))
-		     (t (setf state 'reading-words)
-			(unread next-char *stream*))))
-	      (in-comment-block
-	       (cond ((equal next-char '#\/)
-		      (setf state 'reading-words))))
-	      (in-comment-line
-	       (cond ((member next-char '(#\newline #\return))
-		      (setf state 'reading-words))))
-	      (reading-words
-	       (cond ;; if we have a slash, set state to saw-1-slash
-		     ((equal next-char '#\/)
-		      (setf state 'saw-1-slash))
-		     ;; handle case for paragraph (two newlines in a row)
-		     ((and (equal next-char #\newline)
-			   (equal (peek-char nil *stream* nil) #\newline))
-		      (read-char *stream*)
-		      (push '*paragraph* s))
-		     ;; ignore spaces
-		     ((member next-char '(#\space #\return #\newline #\tab)))
-		     ;; default case: 
-		     (t
-		      (unread-char next-char *stream*)
-		      (let ((symbol (read *stream*)))
-			;; if it's a number just push it on
-			(cond ((numberp symbol)
-			       (push symbol s))
-			      ;; otherwise 
-			      (t (let ((str (string symbol)))
-				   (push (intern
-					  (string-right-trim '(#\.) str))
-					 s)
-				   (cond ((char= '#\. (char str (1- (length str))))
-					  (push '*full-stop* s)
-					  (if (equal (peek-char nil *stream* nil) #\newline)
-					      (push '*paragraph* s)))))))))))))
+        (equal next-char '#\@))
+        (setf state 'done))
+    (case state
+          (saw-1-slash
+           (cond ((equal next-char '#\/)
+              (setf state 'saw-2-slashes))
+             (t (setf state 'in-comment-block))))
+          (saw-2-slashes
+           (cond ((equal next-char '#\/)
+              (setf state 'in-comment-line))
+             (t (setf state 'reading-words)
+            (unread next-char *stream*))))
+          (in-comment-block
+           (cond ((equal next-char '#\/)
+              (setf state 'reading-words))))
+          (in-comment-line
+           (cond ((member next-char '(#\newline #\return))
+              (setf state 'reading-words))))
+          (reading-words
+           (cond ;; if we have a slash, set state to saw-1-slash
+             ((equal next-char '#\/)
+              (setf state 'saw-1-slash))
+             ;; handle case for paragraph (two newlines in a row)
+             ((and (equal next-char #\newline)
+               (equal (peek-char nil *stream* nil) #\newline))
+              (read-char *stream*)
+              (push '*paragraph* s))
+             ;; ignore spaces
+             ((member next-char '(#\space #\return #\newline #\tab)))
+             ;; default case: 
+             (t
+              (unread-char next-char *stream*)
+              (let ((symbol (read *stream*)))
+            ;; if it's a number just push it on
+            (cond ((numberp symbol)
+                   (push symbol s))
+                  ;; otherwise 
+                  (t (let ((str (string symbol)))
+                   (push (intern
+                      (string-right-trim '(#\.) str))
+                     s)
+                   (cond ((char= '#\. (char str (1- (length str))))
+                      (push '*full-stop* s)
+                      (if (equal (peek-char nil *stream* nil) #\newline)
+                          (push '*paragraph* s)))))))))))))
 
     ;; return the reverse of sentence s (which was built in reverse
     ;; using push.)
@@ -668,35 +668,35 @@
 (demon exp ; search within boundary
   (params myconcept mygap classes dir)
   (comment (test "Search for a CONCEPT with one of the given CLASSES"
-		 "in the given DIRECTION until a boundary is reached.")
-	   (act "The CONCEPT is bound to the given GAP."))
+         "in the given DIRECTION until a boundary is reached.")
+       (act "The CONCEPT is bound to the given GAP."))
   (kill (eval mygap))
   (test (mcsearch (lambda (con)
-		   (if (not (equal con myconcept))
-		       (con-class? con classes)))
-		myconcept 'stop-at-conjunction dir))
+           (if (not (equal con myconcept))
+               (con-class? con classes)))
+        myconcept 'stop-at-conjunction dir))
   (+act (link myconcept mygap test)))
 
 ;;; Stops at a boundary and returns the local character if the
 ;;; boundary is a conjuctive. This is done to handle elisions.
 (defun stop-at-conjunction (c)
   (or (and (con-class? c '*conjunction*) ; created by conjuncts/punctuation
-	   (cond ((class? 'human classes) *local-char*)))
+       (cond ((class? 'human classes) *local-char*)))
       (or  (con-class? c 'boundary))))
 
 ;;; Saves actors in global variables for pronoun reference
 (demon save-character
   (params myconcept)
   (comment (act "Bind the MYCONCEPT to the MOST-RECENT-CHARACTER, if there"
-		"is no LOCAL-CHARACTER bind the MYCONCEPT to it also"))
+        "is no LOCAL-CHARACTER bind the MYCONCEPT to it also"))
   (+act (setf *most-recent-char* myconcept)
-	(if (null *local-char*) (setf *local-char* myconcept))))
+    (if (null *local-char*) (setf *local-char* myconcept))))
 
 ;;; Disambiguation for between "ex" on its own and "ex" as a modifier
 (demon ex-x?
   (params myconcept)
   (comment (test "If the next word is a ...")
-	   (act "Set the MYCONCEPT to the grasp configuration"))
+       (act "Set the MYCONCEPT to the grasp configuration"))
   (kill (eval myconcept))
   (test (or (equal *next-word* 'boyfriend) (equal *next-word* 'girlfriend) (equal *next-word* 'bf) (equal *next-word* 'gf)) ; this allows limited 'look-ahead' ability
   (+act (con-set myconcept (get 'picked 'm1)))))
@@ -706,7 +706,7 @@
 (demon pick-up?
   (params myconcept)
   (comment (test "If the next word is UP...")
-	   (act "Set the MYCONCEPT to the grasp configuration"))
+       (act "Set the MYCONCEPT to the grasp configuration"))
   (kill (eval myconcept))
   (test (equal *next-word* 'up)) ; this allows limited 'look-ahead' ability
   (+act (con-set myconcept (get 'picked 'm1))))
@@ -715,12 +715,12 @@
 (demon decide?
   (params myconcept)
   (comment (test "Search for a person or a physical object after the MYCONCEPT")
-	   (act "Set the MYCONCEPT to the decision configuration"))
+       (act "Set the MYCONCEPT to the decision configuration"))
   (kill (eval myconcept))
   (test (mcsearch (lambda (con)
-		   (and (not (equal con myconcept))
-			(con-class? con '(human physical-object))))
-		myconcept nil 'after))
+           (and (not (equal con myconcept))
+            (con-class? con '(human physical-object))))
+        myconcept nil 'after))
   (+act (con-set myconcept (get 'pick 'm2))))
 
 
@@ -728,12 +728,12 @@
 (demon dated-trans?
   (params myconcept)
   (comment (test "Search to see if there is a person just after")
-	   (act "Set the MYCONCEPT to the transitive or intransitive configuration"))
+       (act "Set the MYCONCEPT to the transitive or intransitive configuration"))
   (kill (eval myconcept))
   (test (mcsearch (lambda (con)
-		   (and (not (equal con myconcept))
-			(con-class? con '(human))))
-		myconcept nil 'after))
+           (and (not (equal con myconcept))
+            (con-class? con '(human))))
+        myconcept nil 'after))
   (+act (con-set myconcept (get 'dated 'm1)))
   (-act (con-set myconcept (get 'dated 'm2)))
 )
@@ -758,8 +758,8 @@
 (demon preposition
   (params myconcept mygap prepositions classes dir)
   (comment (test "Search for a CONCEPT with one of the given CLASSES and"
-		 "preceeded by one of the given PREPOSITIONS.")
-	   (act "The CONCEPT is bound to the given GAP."))
+         "preceeded by one of the given PREPOSITIONS.")
+       (act "The CONCEPT is bound to the given GAP."))
   (kill (eval mygap))
   (test (preposition-search myconcept prepositions classes dir))
   (+act (link myconcept mygap test)))
@@ -768,13 +768,13 @@
 ;;; function search.)
 (defun preposition-search (myconcept prepositions classes dir)
   (mcsearch (lambda (c)
-	     (and (not (equal c myconcept))
-		  (con-class? c classes)
-		  (cond ((atom prepositions) (equal (path '(prepositionobj is *) c)
-					     prepositions))
-			(T (member (path '(prepositionobj is *) c)
-				   prepositions)))))
-	  myconcept nil dir))
+         (and (not (equal c myconcept))
+          (con-class? c classes)
+          (cond ((atom prepositions) (equal (path '(prepositionobj is *) c)
+                         prepositions))
+            (T (member (path '(prepositionobj is *) c)
+                   prepositions)))))
+      myconcept nil dir))
 
 (demon find-object-ref
   (params myconcept)
@@ -785,11 +785,11 @@
   (params myconcept)
   (comment (act "Set the MYCONCEPT to the most recently mentioned female."))
   (test (mcsearch (lambda (con)
-		   (and (not (equal con myconcept))
-			(con-class? con '(human))
-			(equal (path '(gender) con) '(female))
-			))
-		myconcept nil 'before))
+           (and (not (equal con myconcept))
+            (con-class? con '(human))
+            (equal (path '(gender) con) '(female))
+            ))
+        myconcept nil 'before))
   (+act (set1 myconcept test)))
 
 
@@ -798,14 +798,14 @@
 (demon ins-after
   (params myconcept classes slot)
   (comment (test "Search for a CONCEPT with one of the given CLASSES.")
-	   (act "Insert the given SLOT with the MYCONCEPT as its GAP into"
-		"the CONCEPT"))
+       (act "Insert the given SLOT with the MYCONCEPT as its GAP into"
+        "the CONCEPT"))
   (test (mcsearch (lambda (con)
-		   (and (not (equal con myconcept))
-			(con-class? con classes)))
-		myconcept nil 'after))
+           (and (not (equal con myconcept))
+            (con-class? con classes)))
+        myconcept nil 'after))
   (+act (set1 test (append (eval test) (list slot myconcept)))
-	(setf (get myconcept 'inside) (list test slot))))
+    (setf (get myconcept 'inside) (list test slot))))
 
 
 
@@ -838,14 +838,14 @@
 
 (word like
       def (desire actor * <==(exp 'human 'before)
-		  object * <==(exp 'human 'after))
+          object * <==(exp 'human 'after))
 )
 
 
 
 (word john
   def (human name (john)
-	     gender (male))
+         gender (male))
   demons (save-character)
 )
 
@@ -861,22 +861,22 @@
 (word picked
   demons ((pick-up?) (decide?))
   m1 (grasp actor HUMAN-GAP <== (exp 'human 'before)
-	    object OBJECT-GAP <== (exp 'physical-object 'after)
-	    instr (move actor HUMAN-GAP
-			object (fingers)
-			to OBJECT-GAP))
+        object OBJECT-GAP <== (exp 'physical-object 'after)
+        instr (move actor HUMAN-GAP
+            object (fingers)
+            to OBJECT-GAP))
   m2 (mbuild actor * <== (exp 'human 'before)
-	         mobj (poss actor * <== (exp 'human 'before)
-			 object * <== (exp '(human physical-object) 'after)))
+             mobj (poss actor * <== (exp 'human 'before)
+             object * <== (exp '(human physical-object) 'after)))
 )
 
 (word dated
   demons ((dated-trans?))
   m1 (dated actor1 * <== (exp 'human 'before)
-	    actor2 * <== (exp 'human 'after))
+        actor2 * <== (exp 'human 'after))
 
   m2 (dated actor1 * <== (exp 'human 'before)
-	    actor2 * <== (exp 'human 'before))
+        actor2 * <== (exp 'human 'before))
 )
 
 
@@ -889,7 +889,7 @@
 
 (word ball
   def (physical-object class (game-object)
-		name (ball))
+        name (ball))
   demons (save-object))
 
 (word and
@@ -901,7 +901,7 @@
               object THING-GAP <==(exp 'physical-object 'after)
               to * <==(preposition '(in into on) '(human physical-object) 'after)
               instr (propel actor (gravity)
-			         object THING-GAP)))
+                     object THING-GAP)))
 
 
 (word throw
@@ -911,7 +911,7 @@
               instr (propel actor ACTOR-GAP
                             object THING-GAP
                 instr (move actor ACTOR-GAP
-            			     object (hand)))))
+                             object (hand)))))
 
 (word it
   demons (find-object-ref)
@@ -955,7 +955,7 @@
 
 (word box
   def (physical-object class (container)
-		name (box))
+        name (box))
 )
 
 
@@ -987,6 +987,7 @@
                object * <== (exp '(human physical-object mental-object animal) 'after)))
 
 
+
 (word cut 
       demons ((chop?) (decrease?) (stop?))
       
@@ -1003,6 +1004,8 @@
                       existence (part OBJECT-GAP)(from 0)
                                                  (to -10)))
 
+
+
 (word fall
       demons ((decrease?) (fall?) (collapse?))
         m1 (statechange actor HUMAN-GAP (exp 'human 'before)
@@ -1014,11 +1017,15 @@
         m3 (statechange actor ACTOR-GAP (exp '(mental-object physical-object) 'before)
                         health (part ACTOR-GAP) (from 0)
                                               (to -8)))
+
+
 (word stay 
       def (statechange actor ACTOR-GAP <==(exp '(human animal physical-object mental-object) 'before)
                        object OBJECT-GAP <==(exp '(adjective position NIL) 'after)
                        OBJECT-GAP (part ACTOR-GAP) (from 0)
                                                    (to 0)))
+
+
 
 (word build
       def (build actor ACTOR-GAP <== (exp '(human animal)'before)
@@ -1026,9 +1033,12 @@
           (mbuild actor ACTOR-GAP <== (exp '(human animal)'before)
                   object * <== (exp 'mental-object 'after)))
 
+
 (word expect
       def (mbuild actor HUMAN-GAP <== (exp 'human 'before)
                   object (what should be put here?) * <== (exp '?? 'after)))
+
+
 
 (word send
       ;; I send something to someone
@@ -1036,17 +1046,22 @@
                 object * <== (exp 'physical-object 'after)
                 
                 to * <==(preposition 'to '(physical-object human animal) 'after)))
+
+
             
 (word die
       def (statechange actor ACTOR-GAP <== (exp '(human animal physical-object) 'before)
                        health (part ACTOR-GAP) (from 0)
                                                 (to -10)))
 
+
 (word serve
-      def (atrans actor * <==(exp '(human) 'before)
-                  object OBJECT-GAP <==(exp '(physical-object, animal) 'after)
-                  OBJECT-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
-                                              (to UNKNOWN)))
+      def (atrans actor HUMAN-GAP <==(exp 'human 'before)
+                  object OBJECT-GAP <==(exp '(physical-object animal) 'after)
+                  from HUMAN-GAP
+                  to UNKNOWN))
+
+
 (word wait
       def (statechange actor ACTOR-GAP <==(exp '(human animal) 'before)
                        object OBJECT-GAP <==(exp '(huamn physical-object animal) 'after)
@@ -1055,6 +1070,53 @@
                                                    (to 0)
                        instr (mbuild actor ACTOR-GAP
                                      object * <==(exp 'event 'after))))
+
+
+(word buy 
+      def (atrans actor HUMAN-GAP <==(exp 'human 'before)
+                  object OBJECT-GAP <==(exp '(physical-object animal) 'after))
+                  from * <==(exp '(human physical-object) 'after)
+                  to HUMAN-GAP
+                  instr (atrans actor HUMAN-GAP
+                                * (poss HUMAN-GAP) (from HUMAN-GAP)
+                                           (to OBJECT-GAP)))
+
+
+(word appear
+      def (statechange actor ACTOR-GAP <==(exp '(huamn animal physical-object mental-object) 'before')
+                       existence (part ACTOR-GAP) (from -10) (to 0)))
+
+
+(word consider 
+      def (mbuild actor * <==(exp 'huamn 'before)
+                  object * <== (preposition 'about' 'event 'after)))
+
+
+(word love
+      def (mbuild actor * <==(exp 'human 'before)
+                  object * <==(exp '(human physical-object animal mental-object) 'after)))
+
+(word remember 
+      demons((remember-some-event?) (remember-something?))
+      
+      m1 (mtrans actor HUMAN-GAP <==(exp 'human 'before)
+                 object * <==(preposition '(about NIL)' '(human animal physical-object mental-object) 'after)
+                 from HUMAN-GAP
+                 to HUMAN-GAP)
+      m2 (mtrans actor HUMAN-GAP <==(exp 'human 'before)
+                 object * <==(preposition 'that 'event 'after)))
+
+(word offer
+      m1 (atrans actor * <==(exp 'human 'before)
+                  object OBJECT-GAP <==(exp '(physical-object animal) 'after)
+                  OBJECT-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
+                                              (to UNKNOWN))
+      m2 (atrans actor * <==(exp 'human 'before)
+                 ))
+      
+
+
+
 
 
 ;; to do subset equality (subsetp '(a (b)) '((b) a) :test 'equal)
