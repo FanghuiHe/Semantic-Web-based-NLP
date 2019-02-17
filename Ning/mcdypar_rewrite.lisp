@@ -1107,16 +1107,21 @@
                  object * <==(preposition 'that 'event 'after)))
 
 (word offer
+      
+      ;;I offer somthing
       m1 (atrans actor * <==(exp 'human 'before)
-                  object OBJECT-GAP <==(exp '(physical-object animal) 'after)
+                  object OBJECT-GAP <==(exp 'mental-object 'after)
                   OBJECT-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
                                               (to UNKNOWN))
-      m2 (atrans actor * <==(exp 'human 'before)
-                 ))
       
+      ;; I offer you something
+      m2 (atrans actor * <==(exp 'human 'before)
+                 object OBJECT-GAP <==(exp 'human 'after)
+                 object THING-GAP <==(exp 'mental-object 'after)
+                 THING-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
+                                              (to OBJECT-GAP)))
 
 
-
-
+      
 
 ;; to do subset equality (subsetp '(a (b)) '((b) a) :test 'equal)
