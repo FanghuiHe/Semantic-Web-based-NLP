@@ -1,0 +1,32 @@
+;;  ?? should we differentiate position and phy-obj/ mobj?
+;; 	Add position as exp type=>
+;;	?? if so, what about the word like reach, which can have many possible type of actors
+;;  ?? poss 什么意思 (possessive)
+;; 	?? how to deal with tow instrumental cd (e.g. bring)
+;; 	?? do we need to specify the preposition of a verb? if so, 
+;; 		many verbs will have different meaning given different preposition, how to deal with it? define different phrases
+;; 	Define OBJECT-GAP
+;;  How to deal with the Modal verbs? primitive as NIL? (e.g. must)
+;; 	How to deal with the verbs like "I happen to see sth"?
+;; 	Define event as an exp type to represent an event / a thing. Are there difference between the two?
+;;	=> a complete cd can be an event OR just as a rule, any primitive can be an event
+;; 	Add an abstract-obj as exp type
+;; 	Double check about the statechange syntax (NING)
+;; 	?? for vi, label object as NIL? (e.g. happen m1) Also mention that vi may heavily depend on prepositions.
+;;	?? what about words that are both intransitive and transitive? 2 modes? (e.g. write)
+;;	collapse VS death. how to deal with the scale
+;;	?? Also, do we need to consider personification? For example, computer write into its memory; the wind writes a song
+;;  ?? preposition syntax? and against gravity? (e.g. sit)
+
+
+;; 	define UNKNOWN (e.g. lose my wallet)
+;;  ?? E.g. meet => body meet? Face meet? Do we need instrumental cd?
+;; 	?? HOW TO DEAL WITH TOW OBJECT? E.G. I PAY YOU MY MONEY
+;; 	?? What will be the primitives for words like include? Should we say the primitives are nil and then use contain/part?
+;; 	?? How can we deal with two sentence linked by 'and'? Can we do it with the structure we have now?
+;; 	?? Continue to do sth?
+;; 	Define prep-gap as a new variable name
+;; 	For words like "pay/buy", should we assume they are atrans actor's possesion or it can be anything? (e.g. uing "* from actor to object" or "possesion from actor to object")
+;;	How to define set?
+;;	?? Also, can our code identify syntax like exp '(nil human) after? Says, will our code deal "nil" as not going to search for anything after and deal "human" as going to search for human object after?
+;;	Or we will need to write the two situations into two demons? (e.g. learn from)
