@@ -956,7 +956,7 @@
 	m1 (statechange actor OBJECT-GAP <== (exp '(event) 'before)
 					object NIL 
 					existence (part OBJECT-GAP) (from 0)
-												(to 1)
+												(to 1))
 	m2 (NIL actor HUMAN-GAP <== (exp '(human) 'before)
 			object VERB
 			to * <==(preposition '(to))))
@@ -1065,12 +1065,95 @@
 				object OBJECT-GAP <== (exp '(human animal physical-object mental-object) 'after)
 				from * <== (preposition '(from nil) '(human animal physical-object mental-object) 'after)))
 					 
+(word charge
+	def (atrans actor ACTOR-GAP <== (exp 'human 'before)
+				object OBJECT-GAP <== (exp 'human 'after)
+				from ACTOR-GAP
+				to OBJECT-GAP))
 
+(word lead
+	demons((leading?)(leadTo?))
+	m1 (mtrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+				object OBJECT-GAP <== (exp '(human animal physical-object mental-object) 'after)
+				to ACTOR-GAP))
+;; double check!!
+	m2 (ptrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+				object OBJECT-GAP <== (exp '(human animal physical-object mental-object event) 'before)
+				to * <== (preposition 'to '(event position nil) 'after)))
+
+				;; reduce doesn't matter???
+(word understand
+	def(mbuild actor ACTOR-GAP <== (exp '(human animal) 'before)
+			   object OBJECT-GAP <== (exp '(nil human animal event mental-object physical-object) 'before)
+			   instr(mtrans actor OBJECT-GAP
+							object ACTOR-GAP
+							from OBJECT-GAP
+							to ACTOR-GAP)))
+;; 	check to present the term
+(word watch 
+	demons((watch?)(watchDo?)(watchDoing))
+	m1 (attend actor ACTOR-GAP <== (exp '(human animal) 'before)
+			   object OBJECT-GAP <== (exp '(physical-object human) 'after)
+			   instr(attend actor ACTOR-GAP
+							object OBJECT-GAP
+							eye (part ACTOR-GAP) (from eye)
+												 (to OBJECT-GAP))
+	m2 (;;	??show past tense?)
+	m3 (;;	??show the tense?
+	)))
+	
+(word follow 
+	demons((ptrans?)(mtrans?)
+	m1 (ptrans actor ACTOR-GAP <==(exp '(human animal) 'before)
+				object OBJECT-GAP <== (exp '(human animal mental-object physical event ) 'after)
+				to OBJECT-GAP <== (preposition 'to '(position nil) 'after)
+	m2 (mtrans actor ACTOR-GAP <== (exp '(human animal) 'before)
+				object OBJECT-GAP <==(exp 
+
+(word stop
+	def (statechange actor ACTOR-GAP <==(exp '(human animal physical-object event) 'before)
+					 object OBJECT-GAP <==(exp '(nil verb) 'after)
+					 state (part OBJECT-GAP) (from 1)
+											 (to 0)))
+
+;; 	move?											 
+(word create
+	def (statechange actor ACTOR-GAP <== (exp '(human animal physical-object mental-object event) 'before)
+					object OBJECT-GAP <== (exp '(human event mental-object physical-object) 'after) 
+					existence (part OBJECT-GAP) (from 0)
+												(to 1)))
+	
+(word speak
+	demons ((speak?)(speakAbout?))
+	m1 	(speak actor ACTOR-GAP <== (exp '(human animal) 'before)
+				object OBJECT-GAP <== (exp '(nil physical-object) 'after)
+				to * <== (preposition '(out nil about) (event physical-object nil) 'after)) ;; speak the truth, speak out the truth, speak about the truth
+	m2 	(speak actor ACTOR-GAP <== (exp '(human animal) 'before)
+				object OBJECT-GAP <== (exp '(nil physical-object) 'after)
+				to * <== (preposition '(to with) (human animal) 'after)))
+;;	instr?	
+(word read
+	demons ((read?)(speak?)(readIn?));; computer read in data
+	m1 (attend actor ACTOR-GAP <== (exp 'human 'before)
+				object OBJECT-GAP <== (exp '(physical-object mental-object) 'after)
+				instr(attend actor ACTOR-GAP
+							 object OBJECT-GAP
+							 eye (part ACTOR-GAP) (from ACTOR-GAP)
+												  (to OBJECT-GAP)))
+	m2  (speak actor ACTOR-GAP <==(exp 'human 'before)
+			   object OBJECT-GAP <==(exp '(physical-object mental-object) 'after)
+			   to * <== (preposition '(out nil) 'after))
+	m3  (move actor ACTOR-GAP <==(exp '(human mental-object physical-object) 'before)
+		 	  object OBJECT-GAP <== (exp '(nil physical-object mental-object) 'after)
+			  to * <== (preposition 'in '(nil physical-object mental-object) 'after)))
+				
+	
 ;;
-;;
+;;	END
 				
 (word throw
-  def (ptrans actor ACTOR-GAP <==(exp 'human 'before)
+	
+	def (ptrans actor ACTOR-GAP <==(exp 'human 'before)
 	      object THING-GAP <==(exp 'physical-object 'after)
 	      to * <==(preposition '(at toward towards) '(human physical-object) 'after)
 	      instr (propel actor ACTOR-GAP
