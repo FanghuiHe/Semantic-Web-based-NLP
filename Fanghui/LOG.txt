@@ -1,0 +1,117 @@
+
+2019/2/19
+;;  ?? should we differentiate position and phy-obj//mobj?
+;; 	Add position as exp type=>/
+;;	?? if so, what about the word like reach, which can have many possible type of actors
+;;  ?? poss 什么意思 (possessive)
+;; 	?? how to deal with two instrumental cd (e.g. bring)
+;; 	?? do we need to specify the preposition of a verb? if so, 
+;; 		many verbs will have different meaning given different preposition, how to deal with it? define different phrases
+;; 	Define OBJECT-GAP
+;;  How to deal with the Modal verbs? primitive as NIL? (e.g. must)
+;; 	How to deal with the verbs like "I happen to see sth"?
+;; 	Define event as an exp type to represent an event / a thing. Are there difference between the two?
+;;	=> a complete cd can be an event OR just as a rule, any primitive can be an event
+;; 	Add an abstract-obj as exp type
+;; 	Double check about the statechange syntax (NING)
+;; 	?? for vi, label object as NIL? (e.g. happen m1) Also mention that vi may heavily depend on prepositions.
+;;	?? what about words that are both intransitive and transitive? 2 modes? (e.g. write)
+;;	collapse VS death. how to deal with the scale
+;;	?? Also, do we need to consider personification? For example, computer write into its memory; the wind writes a song
+;;  ?? preposition syntax? and against gravity? (e.g. sit)
+
+2019/2/21
+;; 	define UNKNOWN (e.g. lose my wallet, to UNKNOWN)
+;; 	add verb as a exp type
+;;  ?? E.g. meet => body meet? Face meet? Do we need instrumental cd?
+;; 	?? HOW TO DEAL WITH TOW OBJECT? E.G. I PAY YOU MY MONEY
+;; 	?? What will be the primitives for words like include? primitives are nil and then use contain/part?
+;; 	?? How can we deal with two sentences linked by 'and'? Can we do it with the structure we have now?
+;; 	?? Continue to do sth?
+;; 	Define prep-gap as a new variable name
+;; 	For words like "pay/buy", should we assume they are atrans actor's possesion or it can be anything? (e.g. uing "* from actor to object" or "possesion from actor to object")
+;;	How to define set?
+;;	?? Also, can our code identify syntax like exp '(nil human) after? Says, will our code deal "nil" as not going to search for anything after and deal "human" as going to search for human object after?
+;;	Or we will need to write the two situations into two demons? (e.g. learn from)
+
+;; 	?? How to deal with the verbs like "lead". We are expecting something from the actor?
+;; 	?? What about the causality? Like "something leads to something"? ptrans with to?
+;; 	?? some words, like "hear" "sound" involve sense organ. should we say the actor is human or senseOrgan (part human) or instr?
+;; 	?? how to show the past tense? E.G. I watch sb do sth VS. I watch sb doing sth.
+;;	?? For word like create, sometimes you may need involve move but at always. should we divide the case by using demons onw with instr and one without?
+
+;; ?? must object
+;;  expectation / planning/ goals / desires/ wants / needs / probability
+;; 	=> think about that
+
+meeting
+;; 	slime set up.
+;; 	make u
+
+2019/02/23 Document
+1.	Some actions like "kill" (e.g. I kill a process) don't have a clear indication of what actions I do. 
+	What is important is the state change of the object. In this case, we would like to use "unknown" in the main CD 
+	and the statechange in the result CD. Also, we would like to consider statechange as an active primitive instead of
+	a passive one. For example, in "I kill a process", the actor of the result CD will be process instead of I, which let 
+	statechange almost never have an object. In this way, we keep the meaning of primitives consistent.
+	(e.g. "hold on")
+2.	UNKNOWN means anyone/anything. In the preious point we mentioned "unknown actor ACTOR-GAP". Here unknown means the 
+	primitive can be any primitive, but we dn't know what action ACTOR-GAP will use.
+	Also, in "They hold on", we use unknown to show that we don't know what aspect of the state doesn't change, but at least one aspect doesn't.
+	
+Q1: For sentence like "I bring you something", how do we make the sentence differentiate between the two objects?
+	Says, the exp after "object" is '(human animal) and the exp after "to" is '(human animal mental-object physical object).
+	How does the program recognize "you" is actually after "to" and "something" is after "object"? Will the program recognize 
+	according to the order?
+	
+3.	"nil" will only appear when rhe variable may or may not have a value. When we know the variable won't have a value, we will
+	ignore it totally. 
+	
+4.	Add state and adjective as statechange and exp variables
+
+2019/02/23 Document
+1.	Some actions like "kill" (e.g. I kill a process) don't have a clear indication of what actions I do. 
+	What is important is the state change of the object. In this case, we would like to use "unknown" in the main CD 
+	and the statechange in the result CD. Also, we would like to consider statechange as an active primitive instead of
+	a passive one. For example, in "I kill a process", the actor of the result CD will be process instead of I, which let 
+	statechange almost never have an object. In this way, we keep the meaning of primitives consistent.
+	(e.g. "hold on")
+2.	UNKNOWN means anyone/anything. In the previous point we mentioned "unknown actor ACTOR-GAP". Here unknown means the 
+	primitive can be any primitive, but we don't know what action ACTOR-GAP will use.
+	Also, in "They hold on", we use unknown to show that we don't know what aspect of the state doesn't change, but at least one aspect doesn't.
+		
+3.	"nil" will only appear when the variable may or may not have a value. When we know the variable won't have a value, we will
+	ignore it totally. 
+	
+4. 	We add the following as exp variable:
+	Verb ⇒ usually used for modal verbs like must, happen to, need to, etc. Expect a 
+	verb.
+	position⇒ usually used when we expect a place. 
+	event⇒ usually used when we expect a script or an event. Can also be used when we expect a pronoun that represents an event.
+
+5.	We do not consider figure of speech.
+
+6.	We do not consider conjunctions like “and” and “or”.
+
+7. 	We do not consider past tense or any other tense.
+
+Q1: For sentence like "I bring you something", how do we make the sentence differentiate between the two objects?
+	Says, the exp after "object" is '(human animal) and the exp after "to" is '(human animal mental-object physical object).
+	How does the program recognize "you" is actually after "to" and "something" is after "object"? Will the program recognize variables 
+	according to the order?
+
+Q2. How to deal with sentences like “I lead you to the success.” I feel like the verb “lead” doesn’t have a good primitive. 
+	It’s not mtrans, neither ptrans, nor move. It’s more like “believe”. 
+	Should we use EXPECT to start a instrumental CD?
+
+Q3. How to represent causality?
+	We would use result to start an instrumental CD.
+
+Q4. How to deal with verbs involving sense organ? Like “I hear something”.
+      	We would keep the actor as “I”, and then use an instrumental CD to involve sense organ. We can compare this with the example in the book.
+
+
+
+
+
+
