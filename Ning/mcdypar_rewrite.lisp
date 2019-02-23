@@ -967,20 +967,25 @@
 (word kill
       demons ((physically-kill?) (stop?))
       m1 (move actor ACTOR-GAP <==(exp '(human physical-object animal) 'before)
-                object * <==(exp '(huamn animal) 'after)
-          (statechange actor ACTOR-GAP
-                       object health (from 0)
-                                     (to -10)))
-      m2 (statechange actor * (exp 'huamn before)
+                object OBJECT-GAP <==(exp '(huamn animal) 'after)
+                result (
+                  statechange actor health (part OBJECT-GAP) 
+                  (from 0) 
+                  (to -10))
+
+      ;; don't know the explicit action, emphasize on statechange
+      m2 (unknown actor * (exp 'huamn before)
                       object OBJECT-GAP <==(exp '(physical-object mental-object) 'after)
-                      existence (part OBJECT-GAP)(from 0)
-                                                (to -10)))
+                      result (
+                        statechange actor existence (part OBJECT-GAP) 
+                        (from 0) 
+                        (to -10)))))
                 
 
 (word reach
       demons ((arrive?) (approach?))
       m1 (ptrans actor * <== (exp '(human animal) 'before)
-                 from 
+                 from unknown
                  to * <== (exp 'postion 'after))
 
       m2 (move actor * <== (exp '(human physical-object mental-object animal) 'before)
@@ -995,81 +1000,139 @@
                object OBJECT-GAP <== (exp '(animal physical-object) 'after)
                instr (propel actor HUMAN-GAP
                             object OBJECT-GAP))
-      m2 (statechange actor * (exp 'human 'before)
-                      object OBJECT-GAP ('physical-object 'after)
-                      amount (part OBJECT-GAP) (from 0)
-                                              (to -5))
-      m3 (statechange actor * (exp 'human 'before)
-                      object OBJECT-GAP ('physical-object 'after)
-                      existence (part OBJECT-GAP)(from 0)
-                                                 (to -10)))
+
+      m2 (unknown actor * (exp 'human 'before)
+                  object OBJECT-GAP ('physical-object 'after)
+                  result (
+                    statechange actor amount (part OBJECT-GAP) 
+                    (from 0) 
+                    (to -5)))
+
+      m3 (unknown actor * (exp 'human 'before)
+                  object OBJECT-GAP ('physical-object 'after)
+                  result (
+                    statechange actor existence (part OBJECT-GAP)
+                    (from 0) 
+                    (to -10))))
 
 
 
 (word fall
       demons ((decrease?) (fall?) (collapse?))
-        m1 (statechange actor HUMAN-GAP (exp 'human 'before)
-                        amount (part HUMAN-GAP) (from 0)
-                                                 (to -5))
+
+        m1 (unknown actor THING-GAP (exp 'mental-object 'before)
+                    result (
+                      statechange actor amount (part THING-GAP) 
+                      (from 0) (to -5)))
+
         m2 (move actor ACTOR-GAP (exp '(huamn animal physical-object) 'before)
                  instr (propel actor (gravity)
                         object ACTOR-GAP))
-        m3 (statechange actor ACTOR-GAP (exp '(mental-object physical-object) 'before)
-                        health (part ACTOR-GAP) (from 0)
-                                              (to -8)))
+
+        m3 (unknown actor ACTOR-GAP (exp '(mental-object physical-object) 'before)
+                result( 
+                  statechange actor health (part ACTOR-GAP) 
+                  (from 0) 
+                  (to -8))))
 
 
 (word stay 
-      def (statechange actor ACTOR-GAP <==(exp '(human animal physical-object mental-object) 'before)
-                       object OBJECT-GAP <==(exp '(adjective position NIL) 'after)
-                       OBJECT-GAP (part ACTOR-GAP) (from 0)
-                                                   (to 0)))
+      demons ((position?) (adj-or-nil?))
+
+      m1 (unknown actor ACTOR-GAP <==(exp '(human animal physical-object mental-object) 'before)
+                  object OBJECT-GAP <==(exp 'position 'after)
+                  from position
+                  to position)
+      m2 (unknown actor ACTOR-GAP <==(exp '(human animal physical-object mental-object) 'before)
+                  object * <==(exp '(adjective nil) 'after)
+                  result (
+                    statechange actor unknown (part ACTOR-GAP)
+                    (from 1)
+                    (to 1))))
 
 
 
 (word build
-      def (build actor ACTOR-GAP <== (exp '(human animal)'before)
-                  object * <== (exp 'physical-object 'after))
-          (mbuild actor ACTOR-GAP <== (exp '(human animal)'before)
-                  object * <== (exp 'mental-object 'after)))
+      demons ((physically-build?) (mbuild?))
+
+      m1 (move actor * <==(exp '(human animal) 'before)
+                     object OBJECT-GAP <== (exp 'physical-object 'after)
+                     result (
+                      statechange atcor existence (part OBJECT-GAP)
+                      (from -10)
+                      (to 0)))
+
+      m2 (mbuild actor * <==(exp '(human animal)'before)
+                  object OBJECT-GAP <== (exp 'mental-object 'after)
+                  result (
+                      statechange atcor existence (part OBJECT-GAP)
+                      (from -10)
+                      (to 0))))
+
 
 
 (word expect
-      def (mbuild actor HUMAN-GAP <== (exp 'human 'before)
-                  object (what should be put here?) * <== (exp '?? 'after)))
+      def (mbuild actor * <==(exp 'human 'before)
+                  object EVENT-GAP <==(exp 'event 'after)
+                  result (
+                      statechange atcor existence (part EVENT-GAP)
+                      (from -10)
+                      (to 0))))
 
 
 
 (word send
-      ;; I send something to someone
-      def (move actor * <== (exp 'huamn 'before)
-                object * <== (exp 'physical-object 'after)
-                
-                to * <==(preposition 'to '(physical-object human animal) 'after)))
+      demons ((sb-verb-sth-to-sb?) (sb-verb-sb-sth))
+      
+      m1 (atrans actor ACTOR-GAP <==(exp 'huamn 'before)
+               object * <==(exp 'physical-object 'after)
+               from ACTOR-GAP
+               to * <==(preposition 'to '(physical-object human animal) 'after))
+
+      m2 (atrans actor ACTOR-GAP <==(exp 'human 'before)
+               from ACTOR-GAP
+               to * <==(exp '(physical-object human animal) 'after)
+               object * <==(exp 'physical-object 'after)))
 
 
             
 (word die
-      def (statechange actor ACTOR-GAP <== (exp '(human animal physical-object) 'before)
-                       health (part ACTOR-GAP) (from 0)
-                                                (to -10)))
+      def (unknown actor ACTOR-GAP <== (exp '(human animal physical-object) 'before)
+                   result( 
+                    statechange actor health (part ACTOR-GAP) 
+                    (from 0)
+                    (to -10))))
 
 
 (word serve
-      def (atrans actor HUMAN-GAP <==(exp 'human 'before)
+      demons((sb-verb-sth-to-sb?) (sb-verb-sb-sth?) (sb-verb-sth))
+
+      m1 (atrans actor HUMAN-GAP <==(exp 'huamn 'before)
+               object <==(exp '(mental-object physical-object animal) 'after) 
+               from HUMAN-GAP
+               to * <==(preposition 'to '(physical-object human animal) 'after)
+      
+      ;; I offer you something
+      m2 (atrans actor ACTOR-GAP <==(exp 'human 'before)
+                 object * <==(exp '(physical-object mental-object animal) 'after)))
+                 from ACTOR-GAP
+                 to * <==(exp 'human 'after)
+
+      m3 (atrans actor HUMAN-GAP <==(exp 'human 'before)
                   object OBJECT-GAP <==(exp '(physical-object animal) 'after)
                   from HUMAN-GAP
                   to UNKNOWN))
 
 
 (word wait
-      def (statechange actor ACTOR-GAP <==(exp '(human animal) 'before)
-                       object OBJECT-GAP <==(exp '(huamn physical-object animal) 'after)
-                       to * <==(preposition '(for NIL) '(human physical-object animal) 'after)
-                       OBJECT-GAP (part ACTOR-GAP) (from 0)
-                                                   (to 0)
-                       instr (mbuild actor ACTOR-GAP
-                                     object * <==(exp 'event 'after))))
+      def (unknown actor ACTOR-GAP <==(exp '(human animal) 'before)
+                   object OBJECT-GAP <==(exp '(huamn physical-object animal) 'after)
+                   result(
+                    statechange atcor ACTOR-GAP
+                    (from 0)
+                    (to 0))
+                   instr (mbuild actor ACTOR-GAP
+                                 object * <==(exp 'event 'after))))
 
 
 (word buy 
@@ -1089,37 +1152,42 @@
 
 (word consider 
       def (mbuild actor * <==(exp 'huamn 'before)
-                  object * <== (preposition 'about' 'event 'after)))
+                  object * <== (preposition '(about nil) 'event 'after)))
 
 
 (word love
       def (mbuild actor * <==(exp 'human 'before)
                   object * <==(exp '(human physical-object animal mental-object) 'after)))
 
+
 (word remember 
       demons((remember-some-event?) (remember-something?))
       
       m1 (mtrans actor HUMAN-GAP <==(exp 'human 'before)
-                 object * <==(preposition '(about NIL)' '(human animal physical-object mental-object) 'after)
+                 object * <==(preposition '(about NIL)' '(human animal physical-object mental-object event) 'after)
                  from HUMAN-GAP
-                 to HUMAN-GAP)
-      m2 (mtrans actor HUMAN-GAP <==(exp 'human 'before)
-                 object * <==(preposition 'that 'event 'after)))
+                 to HUMAN-GAP))
+
 
 (word offer
-      
-      ;;I offer somthing
-      m1 (atrans actor * <==(exp 'human 'before)
-                  object OBJECT-GAP <==(exp 'mental-object 'after)
-                  OBJECT-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
-                                              (to UNKNOWN))
+  demons((sb-verb-sth-to-sb?) (sb-verb-sb-sth?) (sb-verb-sth))
+      ;;I offer somthing to you
+      m1 (atrans actor HUMAN-GAP <==(exp 'huamn 'before)
+               object <==(exp '(mental-object physical-object animal) 'after) 
+               from HUMAN-GAP
+               to * <==(preposition 'to '(physical-object human animal) 'after)
       
       ;; I offer you something
-      m2 (atrans actor * <==(exp 'human 'before)
-                 object OBJECT-GAP <==(exp 'human 'after)
-                 object THING-GAP <==(exp 'mental-object 'after)
-                 THING-GAP (poss HUMAN-GAP) (from HUMAN-GAP)
-                                              (to OBJECT-GAP)))
+      m2 (atrans actor ACTOR-GAP <==(exp 'human 'before)
+                 object * <==(exp '(physical-object mental-object animal) 'after)))
+                 from ACTOR-GAP
+                 to * <==(exp 'human 'after)
+
+      m3 (atrans atcor ACTOR-GAP <==(exp 'huamn 'before)
+                 object * <==(exp '(physical-object mental-object animal) 'after)
+                 from ACTOR-GAP
+                 to UNKNOWN)）
+
 
 (word win
       def (atrans actor ACTOR-GAP <==(exp 'human 'before)
@@ -1135,7 +1203,7 @@
       def (move actor ACTOR-GAP <==(exp '(animal huamn) 'before)
                 object THING-GAP <==(exp 'physical-object 'after)
                 ;; from closed to open
-                instr (statechange actor ACTOR-GAP
+                result (statechange actor ACTOR-GAP
                                    object THING-GAP
                                    state (part THING-GAP))))
 
@@ -1146,30 +1214,35 @@
 
 
 (word spend
-      demons((spend-something?)(spend-something-on-something)) 
+      demons((spend-something?) (spend-something-on-something)) 
       m1 (atrans actor ACTOR-GAP <==(exp '(human mental-object animal) 'before)
                                             ;; Some animals spend their whole life on...
-                  object THING-GAP <== (exp '(physical-object mental-object) 'after)
-                  object OBJECT-GAP <== (preposition '(on for) '(physical-object mental-object human animal) 'after)
-                  THING-GAP (poss ACTOR-GAP) (from ACTOR-GAP)
-                                             (to OBJECT-GAP))
+                  object THING-GAP (poss ACTOR-GAP) <== (exp '(physical-object mental-object) 'after)
+                  from ACTOR-GAP
+                  to * <== (preposition '(on for) '(physical-object mental-object human animal) 'after)
       
       m2 (def (atrans actor ACTOR-GAP <==(exp '(human mental-object animal) 'before)
-                  object THING-GAP <== (exp '(physical-object mental-object) 'after)
-                  THING-GAP (poss ACTOR-GAP) (from ACTOR-GAP)
-                                             (to UNKNOWN))))
+                  object THING-GAP (poss ACTOR-GAP) <== (exp '(physical-object mental-object) 'after)
+                  from ACTOR-GAP
+                  to UNKNOWN))))
 
 (word add
-      demons ((physically?)())
+      demons ((physically?) (add-up?))
       
       ;; He added some salt into the soup
       m1 (move actor ACTOR-GAP <==(exp 'human 'before)
                object THING-GAP <==(exp 'physical-object 'after)
-               instr (ptrans actor ACTOR-GAP
-                             object THING-GAP
+               instr (ptrans actor THING-GAP
                              from UNKNOWN
                              to UNKNOWN))
-      m2 (statechange actor))
+
+      m2 (unknown actor * <==(exp 'human 'before)
+               object OBJECT-GAP <==(exp '(physical-object mental-object) 'after)
+               result(
+                statechange actor unknown (part ACTOR-GAP)
+                (from 0) 
+                (to 5))))
+
 
 ;;transfer of permission
 (word allow 
