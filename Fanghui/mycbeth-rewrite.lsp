@@ -903,80 +903,75 @@
 	      instr (propel actor (gravity)
 			    object THING-GAP)))
 
-;;  ?? should we differentiate position and phy-obj/ mobj?
-;; 	Add position as exp type=>
-;;	?? if so, what about the word like reach, which can have many possible type of actors
-;;  ?? poss 什么意思 (possessive)
-;; 	?? how to deal with tow instrumental cd (e.g. bring)
-;; 	?? do we need to specify the preposition of a verb? if so, 
-;; 		many verbs will have different meaning given different preposition, how to deal with it? define different phrases
-;; 	Define OBJECT-GAP
-;;  How to deal with the Modal verbs? primitive as NIL? (e.g. must)
-;; 	How to deal with the verbs like "I happen to see sth"?
-;; 	Define event as an exp type to represent an event / a thing. Are there difference between the two?
-;;	=> a complete cd can be an event OR just as a rule, any primitive can be an event
-;; 	Add an abstract-obj as exp type
-;; 	Double check about the statechange syntax (NING)
-;; 	?? for vi, label object as NIL? (e.g. happen m1) Also mention that vi may heavily depend on prepositions.
-;;	?? what about words that are both intransitive and transitive? 2 modes? (e.g. write)
-;;	collapse VS death. how to deal with the scale
-;;	?? Also, do we need to consider personification? For example, computer write into its memory; the wind writes a song
-;;  ?? preposition syntax? and against gravity? (e.g. sit)
+;;	START
+;;
 
-
-;; 	?? UNKNOWN OR NIL?? (e.g. lose my wallet)
 (word believe
-	def (mbuild actor * <== (exp 'human 'before)
-				object * <== (exp '(human, object) 'after)))
+	def (mbuild actor ACTOR-GAP <== (exp 'human 'before)
+				object OBJECT-GAP <== (exp '(human object) 'after)))
 
 (word hold 
-	def (grasp actor * <== (exp 'human 'before)
+	demons ((grasp?)(wait?))
+	m1 (grasp actor * <== (exp 'human 'before)
 				object HUMAN-GAP <== (exp 'object 'after)
 				instr (move actor HUMAN-GAP
 							object (fingers)
-							to OBJECT-GAP)))
+							to OBJECT-GAP))
+	m2 (statechange actor * <== (exp '(human animal) 'before)
+					unknown from(1) to (1)))
 
 (word bring ;;revise!!
-	demons((humanBring?)(objectBring?)())
-	def (grasp actor OBJECT-GAP <== (exp '(human physical-obj mobj)'before)
-				object OBJECT-GAP2 <== (exp '(human position) 'after)
-				from OBJECT-GAP
-				to OBJECT-GAP <==(preposition '(in into to) ' (human physical-object) 'after) 
-				;; actually depends on the preposition
-				from OBJECT-GAP
-				instr (move actor HUMAN-GAP
-							object (fingers)
+	;; 1). bring you sth
+	;; 2). bring sth to you
+	;; 3). bring sth/you to somewhere
+	demons((bring-sth?)(bring-to?)())
+	m1 (ptrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+			   object OBJECT-GAP <== (exp '(human animal physical-object mental-object) 'after)
+			   to PREP-GAP <== (exp '(human animal) 'before)
+			   instr (move actor ACTOR-GAP
+							object legs (part ACTOR-GAP)
+							to PREP-GAP)
+			   instr (grasp actor ACTOR-GAP
+							object fingers (ACTOR-GAP)
 							to OBJECT-GAP))
-				instr (ptrans actor HUMAN-GAP
-							object (legs)
-							to POSITION-GAP))
+	m2 (ptrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+			   object OBJECT-GAP <== (exp '(human animal physical-object mental-object) 'after)
+			   to PREP-GAP <== (preposition 'to '(human animal) 'after)
+			   instr (move actor ACTOR-GAP
+							object legs (part ACTOR-GAP)
+							to PREP-GAP)
+			   instr (grasp actor ACTOR-GAP
+							object fingers (ACTOR-GAP)
+							to OBJECT-GAP))
+	m3 (ptrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+					object OBJECT-GAP <== (exp '(human animal physical-object mental-object) 'after)
+					to PREP-GAP <== (preposition 'to 'position 'after)
+					instr (move actor ACTOR-GAP
+							object legs (part ACTOR-GAP)
+							to PREP-GAP)))
 
 (word happen 
 	demons ((start?)(ModalVerb?))
-	m1 (statechange actor OBJECT-GAP <== (exp '(event) 'before)
-					object NIL 
-					existence (part OBJECT-GAP) (from 0)
-												(to 1))
-	m2 (NIL actor HUMAN-GAP <== (exp '(human) 'before)
-			object VERB
-			to * <==(preposition '(to))))
-
-;; ?? must object
-;;  expectation / planning/ goals / desires/ wants / needs / probability
-;; 	=> think about that
+	m1 (statechange actor ACTOR-GAP <== (exp 'event 'before)
+					existence (part ACTOR-GAP) from (0)
+												to (1))
+	m2 (NIL actor ACTOR-GAP <== (exp 'human 'before)
+			to * <==(preposition 'to 'verb 'after)))
+			
 (word must 
 	def (NIL actor OBJECT-GAP <== (exp '(phy-object human mental-object) 'before)
-		     object VERB
-			 to * <==(preposition '(to))))
+			 to * <==(preposition 'to 'verb 'after)))
 			 
-(word write ;; personification problem of computer. Modes may required)
-	def (move actor HUMAN-GAP <== (exp 'human 'before)
-			  object NIL
-			  to OBJECT-GAP <==(preposition '(in into to) 'physical-object 'after) 
-			  instr (move actor HUMAN-GAP
-							object (fingers)
-							to writing appliance))
-
+(word write 
+	demons((write-sth?)(write-prep?))
+	m1 (mtrans actor HUMAN-GAP <== (exp 'human 'before)
+			 object OBJECT-GAP <== (exp '(physical-object mental-object nil) 'after)
+			 to * <==(preposition 'down '(physical-object nil) 'after) 
+			 instr (move actor HUMAN-GAP
+						 object fingers (part HUMAN-GAP)))
+	m2 (mtrans actor HUMAN-GAP <== (exp 'human 'before)
+			   object OBJECT-GAP <== (exp '(physical-object mental-object) 'after)
+			   to * <==(preposition '(to on into) '(physical-object) 'after)))
 (word provide 
 	demons ((atrans?)(mtrans?))
 	m1 (atrans actor OBJECT-GAP <== (exp '(human, phy-obj, mobj) 'before)

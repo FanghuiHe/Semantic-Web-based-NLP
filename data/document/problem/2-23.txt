@@ -1,0 +1,16 @@
+Fanghui
+Q1: For sentence like "I bring you something", how do we make the sentence differentiate between the two objects?
+	Says, the exp after "object" is '(human animal) and the exp after "to" is '(human animal mental-object physical object).
+	How does the program recognize "you" is actually after "to" and "something" is after "object"? Will the program recognize variables 
+	according to the order?
+
+Q2. How to deal with sentences like “I lead you to the success.” I feel like the verb “lead” doesn’t have a good primitive. 
+	It’s not mtrans, neither ptrans, nor move. It’s more like “believe”. 
+	Should we use EXPECT to start a instrumental CD?
+
+Q3. How to represent causality?
+	We would use result to start an instrumental CD.
+
+Q4. How to deal with verbs involving sense organ? Like “I hear something”.
+      	We would keep the actor as “I”, and then use an instrumental CD to involve sense organ. We can compare this with the example in the book.
+
