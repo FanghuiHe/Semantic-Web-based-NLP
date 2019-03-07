@@ -1104,7 +1104,7 @@
 				object OBJECT-GAP <== (exp '(human animal physical-object mental-object event nil) 'before)
 				to * <== (preposition 'to '(event position nil) 'after)))
 
-;; HALF STOP
+
 (word understand
 	def(mbuild actor ACTOR-GAP <== (exp '(human animal) 'before)
 			   object OBJECT-GAP <== (exp '(nil human animal event mental-object physical-object) 'before)
@@ -1112,7 +1112,7 @@
 							object ACTOR-GAP
 							from OBJECT-GAP
 							to ACTOR-GAP)))
-;; 	check to present the term
+
 (word watch 
 	demons((watch?)(watchDo?)(watchDoing))
 	m1 (attend actor ACTOR-GAP <== (exp '(human animal) 'before)
