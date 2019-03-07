@@ -1,0 +1,6 @@
+2019/3/6
+Update the code:
+1. Read multiple exp varaibles
+2. mental-object event animal definition
+3. Multiple demons running
+4. define part poss
