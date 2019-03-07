@@ -99,6 +99,7 @@ Q1: For sentence like "I bring you something", how do we make the sentence diffe
 	Says, the exp after "object" is '(human animal) and the exp after "to" is '(human animal mental-object physical object).
 	How does the program recognize "you" is actually after "to" and "something" is after "object"? Will the program recognize variables 
 	according to the order?
+	Another example: "I provide something to you" VS "I provide you something"
 
 Q2. How to deal with sentences like “I lead you to the success.” I feel like the verb “lead” doesn’t have a good primitive. 
 	It’s not mtrans, neither ptrans, nor move. It’s more like “believe”. 
@@ -111,7 +112,48 @@ Q4. How to deal with verbs involving sense organ? Like “I hear something”.
       	We would keep the actor as “I”, and then use an instrumental CD to involve sense organ. We can compare this with the example in the book.
 
 
+====================================================================================
+Q1. A lot of action will add a direction after the sentence is finished.
+	For example, "He sits down on the table." "sits down" is a demon, but "on the table" is something optional.
+	This kind of sentence merge the two demons together.
+	
+Q2. Can preposition be used individually? Says, not after to.
+	For example, "sit down", preposition should not be after to
+	m2 (move actor ACTOR-GAP <== (exp '(human animal) 'before)
+			 object legs (part ACTOR-GAP)
+			 (preposition 'down) // test after we set up slime
+			 // MAYBE WE CAN CREATE A DEMON TO HANDLE THIS
+			 from high
+			 to low 
+		)
+		
+Q3.	A state is (part ACTOR-GAP) or (poss ACTOR-GAP)? 
+	e.g. continue
+	m2 (statechange actor ACTOR-GAP <== (exp '(animal human phy-object mental-object) 'before)
+					object OBJECT-GAP <== (exp '(verb event) 'after)
+					OBJECT-GAP (from 1) // TEST THIS WITH SLIME
+							   (to 1))
 
+Q4. How to deal with very conceptional verbs? Like lead. // FOR NOW JUST SKIP THE ABSTRUCT VERBS
 
+Q5. Also, "This lead to the situation." VS "This lead you to the situation."
+	Will the program be able to identify the two situations using the syntax below?
+	will the first sentence be identified as object nil or object event?
+	Is after in preposition means after preoposition or after verbs?
+	
+	m2 (ptrans actor ACTOR-GAP <== (exp '(human animal physical-object mental-object) 'before)
+				object OBJECT-GAP <== (exp '(human animal physical-object mental-object event nil) 'before)
+				to PREP-GAP <== (preposition 'to '(event position nil) 'after)))
+	// THIS WILL BE A PROBLEM! E.G. "JOHN DROPPED IN BOX"
+	// WILL BE PARSED AS JOHN PRIMITIVES BOX IN BOX
+										
+1.  "possession" is a word we use when talk about "pay" "buy" "purchase"
+2.  Verbs like "include" "contain" represents status instead of action. 
+    We won't consider them as verbs.
+3.	In the statechange, we define "from 1 to 1" as "cotinue to exit", "from 0 to 0"
+	"continue to not existing", and "from 0 to 1" as "create".
+4.  We say "mental-object" also can represent abstract concept like responsibility, attention, etc.
+
+5. 	"after" in preposition means after the verb, not preposition
 
 
